@@ -1,5 +1,5 @@
-package desplanches.eduardo.cadastroDeNinjas;
-
+package desplanches.eduardo.cadastroDeNinjas.Ninjas;
+import desplanches.eduardo.cadastroDeNinjas.Missoes.MissoesModel;
 import jakarta.persistence.*;
 
 //Entidade
@@ -13,6 +13,11 @@ public class NinjaModel {
     private String nome;
     private String email;
     private int idade;
+
+    // @ManyToOne -> Um ninja tem uma única missão
+    @ManyToOne
+    @JoinColumn(name = "missoes_id")// Foreign Key
+    private MissoesModel missoes;
 
     public NinjaModel() {
 
