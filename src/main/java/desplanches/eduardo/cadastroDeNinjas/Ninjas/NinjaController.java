@@ -2,38 +2,33 @@ package desplanches.eduardo.cadastroDeNinjas.Ninjas;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping
+@RequestMapping("/ninjas")
 
 public class NinjaController {
-
-    @GetMapping("/boasvindas")
-    public String boasVindas(){
-        return "Essa é minha primeira mensagem nessa rota";
-    }
 
     @PostMapping("/adicionar")
     public String criarNinja(){
         return "Ninja criado com sucesso";
     }
 
-    @GetMapping("/todosninjas")
-    public String mostrarTodos(){
-        return "Mostra todos os ninjas";
+    @GetMapping("/listar")
+    public String listarTodos(){
+        return "Ninjas listados com sucesso";
     }
 
-    @GetMapping("/ninjasid")
-    public String ninjasId(){
-        return "Mostrar ninja por id";
+    @GetMapping("/listarid")
+    public String listarId(){
+        return "Ninja listado por id com sucesso";
     }
 
-   @PutMapping("/alterarid")
+   @PutMapping("/alterar")
     public String alterarNinja(){
-        return "Alterar ninja por id";
+        return "Ninja alterado com sucesso";
    }
 
-   @DeleteMapping("/Deletaidr")
+   @DeleteMapping("/Deleta")
     public String deletarNinja(){
-        return "Ninja deletado por Id";
+        return "Ninja deletado com sucesso";
    }
 
 

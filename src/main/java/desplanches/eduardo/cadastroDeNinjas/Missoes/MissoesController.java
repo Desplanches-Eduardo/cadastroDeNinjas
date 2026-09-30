@@ -3,27 +3,26 @@ package desplanches.eduardo.cadastroDeNinjas.Missoes;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping
+@RequestMapping("/missoes")
 public class MissoesController {
-    @PostMapping("/adicionarmissao")
-    public String adicionarMisssao(){
-        return "adicionar missão";
+    @PostMapping("/criar")
+    public String criarMisssao(){
+        return "Missao criada com sucesso";
     }
-    @GetMapping("/todasmissoes")
-    public String todasMissoes(){
-        return "Mostra todas as missoes";
+    @GetMapping("/listar")
+    public String listarMissoes(){
+        return "Missoes listadas com sucesso";
     }
-    @GetMapping("/missoesid")
+    @GetMapping("/listarid")
     public String missoesId(){
-        return "Mostra missoes por Id";
+        return "listar missoes por Id";
     }
-    @PutMapping("/alterarmissoes")
+    @PutMapping("/alterar")
     public String alterarMissoes(){
-        return "Alterar missão por Id";
+        return "missão alterada com sucesso";
     }
-
-    @DeleteMapping("/deletarmissao")
+    @DeleteMapping("/deletar")
     public String deletarMissao(){
-        return "Deleta missao por ID";
+        return "missao deletada com sucesso";
     }
 }
