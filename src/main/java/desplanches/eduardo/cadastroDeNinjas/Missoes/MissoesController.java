@@ -11,16 +11,20 @@ public class MissoesController {
 
     private MissoesService missoesService;
 
+    public MissoesController(MissoesService missoesService) {
+        this.missoesService = missoesService;
+    }
+
     @PostMapping("/criar")
-    public String criarMisssao(){
+    public String criarMissao(){
         return "Missao criada com sucesso";
     }
 
     @GetMapping("/listar")
     public List<MissoesModel> listarMissoes(){return missoesService.listarMissoes();}
 
-    @GetMapping("/listar/id")
-    public MissoesModel listarMissoesPorId(Long id){
+    @GetMapping("/listar/{id}")
+    public MissoesModel listarMissoesPorId(@PathVariable Long id){
         return missoesService.listarMissoesPorId(id);
     }
 

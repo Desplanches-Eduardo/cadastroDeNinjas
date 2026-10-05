@@ -1,8 +1,7 @@
 package desplanches.eduardo.cadastroDeNinjas.Ninjas;
-
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NinjaService {
@@ -15,7 +14,8 @@ public class NinjaService {
     public List<NinjaModel> listarNinjas(){
         return ninjaRepository.findAll();
     }
-//    public List<NinjaModel> listarId(){
-//        return ninjaRepository.findById(id);
-//    }
+    public NinjaModel listarNinjasporId(Long id){
+        Optional<NinjaModel> ninjaPorId = ninjaRepository.findById(id);
+        return ninjaPorId.orElse(null);
+    }
 }

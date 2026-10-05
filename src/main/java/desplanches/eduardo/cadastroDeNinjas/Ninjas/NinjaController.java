@@ -10,6 +10,10 @@ public class NinjaController {
 
     private NinjaService ninjaService;
 
+    public NinjaController(NinjaService ninjaService) {
+        this.ninjaService = ninjaService;
+    }
+
     @PostMapping("/criar")
     public String criarNinja(){
         return "Ninja criado com sucesso";
@@ -20,9 +24,9 @@ public class NinjaController {
         return ninjaService.listarNinjas();
     }
 
-    @GetMapping("/listarid")
-    public String listarId(){
-        return "Ninja listado por id com sucesso";
+    @GetMapping("/listar/{id}")
+    public NinjaModel listarNinjasporId(@PathVariable Long id){
+        return ninjaService.listarNinjasporId(id);
     }
 
    @PutMapping("/alterar")
