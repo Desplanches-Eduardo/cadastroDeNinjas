@@ -1,5 +1,6 @@
 package desplanches.eduardo.cadastroDeNinjas.Missoes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import desplanches.eduardo.cadastroDeNinjas.Ninjas.NinjaModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class MissoesModel {
     private String dificuldade;
     // @OneToMany -> Uma missão pode ter muitos ninjas
     @OneToMany(mappedBy = "missoes")
+    @JsonIgnore
     private List<NinjaModel> ninjas;
 
 
