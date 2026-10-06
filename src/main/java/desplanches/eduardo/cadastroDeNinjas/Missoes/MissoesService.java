@@ -1,11 +1,12 @@
 package desplanches.eduardo.cadastroDeNinjas.Missoes;
+import desplanches.eduardo.cadastroDeNinjas.Ninjas.NinjaModel;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class MissoesService {
-    private MissoesRepository missoesRepository;
+    private final MissoesRepository missoesRepository;
 
     public MissoesService(MissoesRepository missoesRepository) {
         this.missoesRepository = missoesRepository;
@@ -22,5 +23,8 @@ public class MissoesService {
 
     public MissoesModel criarMissao(MissoesModel missao){
         return missoesRepository.save(missao);
+    }
+    public void deletarMissao(Long id){
+        missoesRepository.deleteById(id);
     }
 }
