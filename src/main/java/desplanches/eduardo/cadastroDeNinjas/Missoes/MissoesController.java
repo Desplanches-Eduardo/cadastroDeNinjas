@@ -28,8 +28,8 @@ public class MissoesController {
         return missoesService.listarMissoesPorId(id);
     }
 
-    @PutMapping("/alterar")
-    public String alterarMissoes(){return "missão alterada com sucesso";}
+    @PutMapping("/alterar/{id}")
+    public MissoesModel alterarMissoes(@PathVariable Long id, @RequestBody MissoesModel missaoAlterada){return missoesService.alterarMissoes(id, missaoAlterada);}
 
     @DeleteMapping("/deletar/{id}")
     public void deletarMissao(@PathVariable Long id){missoesService.deletarMissao(id);}
