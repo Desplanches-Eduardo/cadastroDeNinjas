@@ -24,11 +24,12 @@ public class NinjaModel {
     @Column(name = "img_url")
     private String imgUrl;
     private int idade;
-
-    // @ManyToOne -> Um ninja tem uma única missão
     @ManyToOne
-    @JoinColumn(name = "missoes_id")// Foreign Key
+    @JoinColumn(name = "missoes_id")
     private MissoesModel missoes;
+    @Column(name = "rank")
+    private String rank;
+
 
 
 
