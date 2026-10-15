@@ -1,0 +1,30 @@
+<!
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tabela de Missões</title>
+</head>
+<body>
+ <h1>Tabela de Missões</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Nome</th>
+        <th>Dificuldade</th>
+        <th>Ninjas</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each = "missoes: ${missoes}">
+        <td th:text="${missoes.id}"></td>
+        <td th:text="${missoes.nome}"></td>
+        <td th:text="${missoes.dificuldade}"></td>
+        <td th:text="${missoes.ninjas}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
