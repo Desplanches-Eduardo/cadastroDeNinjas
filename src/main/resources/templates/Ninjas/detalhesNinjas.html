@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="'Ninja - ' + ${ninja.nome}">Detalhe do Ninja</title>
+
+    <style>
+        /* ===============================
+           RESET + VARIÁVEIS
+           =============================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-start: #0f172a;
+            --bg-end: #1e293b;
+
+            --surface: #ffffff;
+            --surface-alt: #f8fafc;
+
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+
+            --primary: #6366f1;
+            --info: #0ea5e9;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+
+            --radius: 14px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 20px 45px rgba(0, 0, 0, 0.18);
+
+            --transition: 0.2s ease;
+        }
+
+        /* ===============================
+           BODY / LAYOUT
+           =============================== */
+        body {
+            font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            min-height: 100vh;
+            color: var(--text);
+            padding: 2.5rem 1.25rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* ===============================
+           LINK VOLTAR
+           =============================== */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .back-arrow {
+            font-size: 1.1rem;
+            transition: transform var(--transition);
+        }
+
+        .back-link:hover .back-arrow {
+            transform: translateX(-3px);
+        }
+
+        /* ===============================
+           CARD PRINCIPAL DO NINJA
+           =============================== */
+        .ninja-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .avatar-wrapper {
+            flex-shrink: 0;
+        }
+
+        .avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e2e8f0;
+            border: 4px solid #ffffff;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            display: block;
+        }
+
+        .ninja-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ninja-name {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+        }
+
+        /* ===============================
+           BADGES
+           =============================== */
+        .badges {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+        }
+
+        .id-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.75rem;
+            background: #eef2ff;
+            color: var(--primary);
+            font-weight: 600;
+            border-radius: 999px;
+            font-size: 0.8rem;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            padding: 0.35rem 0.85rem;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            text-transform: capitalize;
+            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.35);
+        }
+
+        /* ===============================
+           GRID DE INFORMAÇÕES
+           =============================== */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+        }
+
+        .info-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text);
+            word-break: break-word;
+        }
+
+        /* ===============================
+           CARD DE MISSÕES
+           =============================== */
+        .missions-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 1.75rem 2rem;
+        }
+
+        .section-header {
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1.25rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .mission-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .mission-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.9rem 1.1rem;
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .mission-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .mission-value {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .difficulty-badge {
+            display: inline-block;
+            padding: 0.3rem 0.85rem;
+            background: var(--info);
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border-radius: 8px;
+            text-transform: capitalize;
+        }
+
+        /* ===============================
+           ESTADO VAZIO
+           =============================== */
+        .empty-state {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .empty-state p {
+            font-size: 0.95rem;
+        }
+
+        /* ===============================
+           RESPONSIVO
+           =============================== */
+        @media (max-width: 640px) {
+            body {
+                padding: 1.25rem 0.75rem;
+            }
+
+            .ninja-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.5rem;
+                gap: 1.25rem;
+            }
+
+            .ninja-name {
+                font-size: 1.5rem;
+            }
+
+            .badges {
+                justify-content: center;
+            }
+
+            .missions-card {
+                padding: 1.25rem;
+            }
+
+            .mission-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.35rem;
+            }
+
+            .avatar {
+                width: 110px;
+                height: 110px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Link de voltar -->
+    <a class="back-link" th:href="@{/ninjas/ui/listar}">
+        <span class="back-arrow">←</span> Voltar para a lista
+    </a>
+
+    <!-- Card do ninja -->
+    <div class="ninja-card">
+        <div class="avatar-wrapper">
+            <img class="avatar"
+                 th:src="${ninja.imgUrl}"
+                 th:alt="${ninja.nome}">
+        </div>
+
+        <div class="ninja-info">
+            <h1 class="ninja-name" th:text="${ninja.nome}">Nome do Ninja</h1>
+
+            <div class="badges">
+                <span class="id-badge">ID <span th:text="${ninja.id}">1</span></span>
+                <span class="rank-badge" th:text="${ninja.rank}">Genin</span>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">📧 Email</div>
+                    <div class="info-value" th:text="${ninja.email}">email@exemplo.com</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">🎂 Idade</div>
+                    <div class="info-value">
+                        <span th:text="${ninja.idade}">20</span> anos
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card de missões -->
+    <div class="missions-card">
+        <div class="section-header">
+            <h2>🗡️ Missão Atribuída</h2>
+        </div>
+
+        <!-- Missão única (modelo atual: ninja.missoes é objeto, não lista) -->
+        <div class="mission-detail" th:if="${ninja.missoes != null}">
+            <div class="mission-row">
+                <span class="mission-label">Nome</span>
+                <span class="mission-value" th:text="${ninja.missoes.nome}">—</span>
+            </div>
+            <div class="mission-row">
+                <span class="mission-label">Dificuldade</span>
+                <span class="difficulty-badge" th:text="${ninja.missoes.dificuldade}">—</span>
+            </div>
+        </div>
+
+
+        <div class="empty-state" th:if="${ninja.missoes == null}">
+            <span class="empty-icon">🕸️</span>
+            <p>Este ninja ainda não possui missões cadastradas.</p>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

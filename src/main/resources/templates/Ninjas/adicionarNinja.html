@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${ninja.id != null} ? 'Alterar Ninja' : 'Adicionar Ninja'">Adicionar Ninja</title>
+
+    <style>
+        /* ===============================
+           RESET + VARIÁVEIS
+           =============================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-start: #0f172a;
+            --bg-end: #1e293b;
+
+            --surface: #ffffff;
+            --surface-alt: #f8fafc;
+
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+
+            --success: #10b981;
+            --success-hover: #059669;
+
+            --danger: #ef4444;
+
+            --radius: 14px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 20px 45px rgba(0, 0, 0, 0.18);
+
+            --transition: 0.2s ease;
+        }
+
+        /* ===============================
+           BODY / LAYOUT
+           =============================== */
+        body {
+            font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            min-height: 100vh;
+            color: var(--text);
+            padding: 2.5rem 1.25rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        /* ===============================
+           CABEÇALHO
+           =============================== */
+        .page-header {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.35rem;
+        }
+
+        .subtitle {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        /* ===============================
+           CARD DO FORMULÁRIO
+           =============================== */
+        .form-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+        }
+
+        /* ===============================
+           MENSAGEM DE SUCESSO
+           =============================== */
+        .alert-success {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: var(--success-hover);
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===============================
+           FORMULÁRIO
+           =============================== */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 0.95rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+            color: var(--text);
+            background: var(--surface-alt);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            transition: border-color var(--transition),
+                        box-shadow var(--transition),
+                        background var(--transition);
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .form-input:hover {
+            border-color: #cbd5e1;
+        }
+
+        .form-input:focus {
+            background: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        /* ===============================
+           BOTÃO DE ENVIO
+           =============================== */
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            width: 100%;
+            padding: 0.85rem 1.25rem;
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform var(--transition),
+                        box-shadow var(--transition),
+                        filter var(--transition);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            filter: brightness(1.05);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+        }
+
+        /* ===============================
+           LINK VOLTAR
+           =============================== */
+        .back-link-wrapper {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .back-arrow {
+            font-size: 1rem;
+            transition: transform var(--transition);
+        }
+
+        .back-link:hover .back-arrow {
+            transform: translateX(-3px);
+        }
+
+        /* ===============================
+           RESPONSIVO
+           =============================== */
+        @media (max-width: 640px) {
+            body {
+                padding: 1.25rem 0.75rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .form-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header class="page-header">
+        <h1 th:text="${ninja.id != null} ? '✏️ Alterar Ninja' : '🥷 Adicionar Novo Ninja'">🥷 Adicionar Novo Ninja</h1>
+        <p class="subtitle" th:text="${ninja.id != null}
+                ? 'Altere os dados do ninja e salve para atualizar o cadastro'
+                : 'Preencha os dados abaixo para cadastrar um novo ninja na vila'">
+            Preencha os dados abaixo para cadastrar um novo ninja na vila
+        </p>
+    </header>
+
+    <div class="form-card">
+
+        <!-- Mensagem de sucesso -->
+        <div th:if="${mensagem}" class="alert-success">
+            <span>✅</span>
+            <span th:text="${mensagem}">Ninja cadastrado com sucesso!</span>
+        </div>
+
+        <!-- Formulário: cadastra um novo ninja ou salva a alteração, conforme o id -->
+        <form th:action="${ninja.id != null}
+                    ? @{/ninjas/ui/alterar/{id}(id=${ninja.id})}
+                    : @{/ninjas/ui/salvar}"
+              th:object="${ninja}" method="post">
+
+            <div class="form-group">
+                <label class="form-label" for="nome">Nome</label>
+                <input class="form-input"
+                       type="text"
+                       id="nome"
+                       th:field="*{nome}"
+                       placeholder="Ex.: Naruto Uzumaki"
+                       required />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="email">Email</label>
+                <input class="form-input"
+                       type="email"
+                       id="email"
+                       th:field="*{email}"
+                       placeholder="ninja@vila.com"
+                       required />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="imgUrl">URL da Imagem</label>
+                <input class="form-input"
+                       type="url"
+                       id="imgUrl"
+                       th:field="*{imgUrl}"
+                       placeholder="https://exemplo.com/imagem.png"
+                       required />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="idade">Idade</label>
+                <input class="form-input"
+                       type="number"
+                       id="idade"
+                       th:field="*{idade}"
+                       placeholder="Ex.: 17"
+                       min="1"
+                       required />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="rank">Rank</label>
+                <input class="form-input"
+                       type="text"
+                       id="rank"
+                       th:field="*{rank}"
+                       placeholder="Ex.: Genin, Chunin, Jonin" />
+            </div>
+
+            <button class="btn-submit" type="submit"
+                    th:text="${ninja.id != null} ? '💾 Salvar Alterações' : '✨ Cadastrar Ninja'">
+                ✨ Cadastrar Ninja
+            </button>
+
+        </form>
+    </div>
+
+    <div class="back-link-wrapper">
+        <a class="back-link" th:href="@{/ninjas/ui/listar}">
+            <span class="back-arrow">←</span> Voltar para a lista de ninjas
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>
