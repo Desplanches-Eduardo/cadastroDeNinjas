@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- MissoesDTO.id é long primitivo: em missão nova ele vale 0, não null;
-         por isso a checagem é id > 0 (em ninja, o id é Long e a checagem é != null) -->
-    <title th:text="${missao.id > 0} ? 'Alterar Missão' : 'Adicionar Missão'">Adicionar Missão</title>
+    <!-- MissoesDTO.id é Long, então missão nova nasce com id null e a checagem é != null,
+         igual à tela de ninja -->
+    <title th:text="${missao.id != null} ? 'Alterar Missão' : 'Adicionar Missão'">Adicionar Missão</title>
 
     <style>
         /* ===============================
@@ -268,8 +268,8 @@
 <div class="container">
 
     <header class="page-header">
-        <h1 th:text="${missao.id > 0} ? '📜 Alterar Missão' : '📜 Adicionar Nova Missão'">📜 Adicionar Nova Missão</h1>
-        <p class="subtitle" th:text="${missao.id > 0}
+        <h1 th:text="${missao.id != null} ? '📜 Alterar Missão' : '📜 Adicionar Nova Missão'">📜 Adicionar Nova Missão</h1>
+        <p class="subtitle" th:text="${missao.id != null}
                 ? 'Altere os dados da missão e salve para atualizar o cadastro'
                 : 'Preencha os dados abaixo para cadastrar uma nova missão na vila'">
             Preencha os dados abaixo para cadastrar uma nova missão na vila
@@ -285,7 +285,7 @@
         </div>
 
         <!-- Formulário: cadastra uma nova missão ou salva a alteração, conforme o id -->
-        <form th:action="${missao.id > 0}
+        <form th:action="${missao.id != null}
                     ? @{/missoes/ui/alterar/{id}(id=${missao.id})}
                     : @{/missoes/ui/salvar}"
               th:object="${missao}" method="post">
@@ -311,7 +311,7 @@
             </div>
 
             <button class="btn-submit" type="submit"
-                    th:text="${missao.id > 0} ? '💾 Salvar Alterações' : '✨ Cadastrar Missão'">
+                    th:text="${missao.id != null} ? '💾 Salvar Alterações' : '✨ Cadastrar Missão'">
                 ✨ Cadastrar Missão
             </button>
 

@@ -12,7 +12,7 @@ import java.util.List;
 
 
 public class MissoesDTO {
-    private long id;
+    private Long id;
     private String nome;
     private String dificuldade;
     private List<NinjaModel> ninjas;
