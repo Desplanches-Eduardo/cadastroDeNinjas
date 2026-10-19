@@ -1,30 +1,435 @@
-<!
-<html lang="en">
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tabela de Missões</title>
+
+    <style>
+        /* ===============================
+           RESET + VARIÁVEIS
+           =============================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-start: #0f172a;
+            --bg-end: #1e293b;
+            --surface: #ffffff;
+            --surface-alt: #f8fafc;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --info: #0ea5e9;
+            --info-hover: #0284c7;
+            --warning: #f59e0b;
+            --warning-hover: #d97706;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --success: #10b981;
+            --success-hover: #059669;
+            --radius: 12px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 20px 45px rgba(0, 0, 0, 0.18);
+            --transition: 0.2s ease;
+        }
+
+        /* ===============================
+           BODY / LAYOUT
+           =============================== */
+        body {
+            font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            min-height: 100vh;
+            color: var(--text);
+            padding: 2.5rem 1.25rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* ===============================
+           CABEÇALHO E TOOLBAR (TOPO)
+           =============================== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            color: #fff;
+        }
+
+        .header-text h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.35rem;
+        }
+
+        .subtitle {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        /* Botão de Adicionar no Topo */
+        .btn-add {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+            transition: transform var(--transition), box-shadow var(--transition), filter var(--transition);
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+            filter: brightness(1.1);
+        }
+
+        /* ===============================
+           AVISOS
+           =============================== */
+        .alert {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            animation: slideDown 0.3s ease;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: var(--success-hover);
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: var(--danger-hover);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===============================
+           WRAPPER DA TABELA
+           =============================== */
+        .table-wrapper {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            overflow-x: auto;
+        }
+
+        /* ===============================
+           TABELA
+           =============================== */
+        .missao-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+            min-width: 900px;
+        }
+
+        .missao-table thead {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+        }
+
+        .missao-table thead th {
+            padding: 1rem 1.1rem;
+            text-align: left;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .missao-table tbody td {
+            padding: 0.85rem 1.1rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+            color: var(--text);
+        }
+
+        .missao-table tbody tr {
+            transition: background var(--transition);
+        }
+
+        .missao-table tbody tr:nth-child(even) {
+            background: var(--surface-alt);
+        }
+
+        .missao-table tbody tr:hover {
+            background: #eef2ff;
+        }
+
+        .missao-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ===============================
+           CÉLULAS ESPECIAIS
+           =============================== */
+        .name-cell {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .id-badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            background: #eef2ff;
+            color: var(--primary);
+            font-weight: 600;
+            border-radius: 999px;
+            font-size: 0.78rem;
+        }
+
+        .difficulty-badge {
+            display: inline-block;
+            padding: 0.3rem 0.75rem;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #fff;
+            font-weight: 600;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.35);
+        }
+
+        .ninja-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .ninja-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.65rem;
+            background: var(--info);
+            color: #fff;
+            font-size: 0.78rem;
+            font-weight: 600;
+            border-radius: 999px;
+        }
+
+        .ninja-chip .ninja-rank {
+            font-weight: 500;
+            opacity: 0.85;
+            font-size: 0.72rem;
+            text-transform: capitalize;
+        }
+
+        .empty-ninjas {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+
+        /* ===============================
+           BOTÕES DE AÇÃO
+           =============================== */
+        .actions {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.45rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: #fff;
+            cursor: pointer;
+            transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+            white-space: nowrap;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-view { background: var(--info); }
+        .btn-view:hover { background: var(--info-hover); }
+
+        .btn-edit { background: var(--warning); }
+        .btn-edit:hover { background: var(--warning-hover); }
+
+        .btn-delete { background: var(--danger); }
+        .btn-delete:hover { background: var(--danger-hover); }
+
+        .delete-form {
+            display: inline;
+        }
+
+        /* ===============================
+           ESTADO VAZIO
+           =============================== */
+        .empty-state {
+            margin-top: 2rem;
+            text-align: center;
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* ===============================
+           RESPONSIVO
+           =============================== */
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .btn-add {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 1.25rem 0.75rem; }
+            .page-header h1 { font-size: 1.6rem; }
+            .actions { flex-direction: column; align-items: stretch; }
+            .btn { justify-content: center; }
+        }
+    </style>
 </head>
 <body>
- <h1>Tabela de Missões</h1>
-<table>
-    <thead>
-    <tr>
-        <th>Id</th>
-        <th>Nome</th>
-        <th>Dificuldade</th>
-        <th>Ninjas</th>
-    </tr>
-    </thead>
 
-    <tbody>
-    <tr th:each = "missoes: ${missoes}">
-        <td th:text="${missoes.id}"></td>
-        <td th:text="${missoes.nome}"></td>
-        <td th:text="${missoes.dificuldade}"></td>
-        <td th:text="${missoes.ninjas}"></td>
-    </tr>
-    </tbody>
-</table>
+<div class="container">
+    <!-- Cabeçalho com o Botão de Adicionar -->
+    <header class="page-header">
+        <div class="header-text">
+            <h1>📜 Lista de Missões</h1>
+            <p class="subtitle">Gerencie as missões cadastradas na vila</p>
+        </div>
+        <a class="btn-add" th:href="@{/missoes/ui/adicionar}">
+            ➕ Adicionar Missão
+        </a>
+    </header>
+
+    <!-- Aviso de sucesso -->
+    <div th:if="${mensagem}" class="alert alert-success">
+        <span>✅</span>
+        <span th:text="${mensagem}">Missão cadastrada com sucesso!</span>
+    </div>
+
+    <!-- Aviso de erro -->
+    <div th:if="${erro}" class="alert alert-error">
+        <span>⚠️</span>
+        <span th:text="${erro}">Missão não encontrada</span>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="missao-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Dificuldade</th>
+                <th>Ninjas</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="missao : ${missoes}">
+                <td><span class="id-badge" th:text="${missao.id}">1</span></td>
+                <td class="name-cell" th:text="${missao.nome}">Nome</td>
+                <td>
+                    <span class="difficulty-badge" th:text="${missao.dificuldade}">A</span>
+                </td>
+                <td>
+                    <div th:if="${!#lists.isEmpty(missao.ninjas)}" class="ninja-cell">
+                        <span class="ninja-chip" th:each="ninja : ${missao.ninjas}">
+                            <span th:text="${ninja.nome}">Naruto</span>
+                            <span class="ninja-rank" th:text="${ninja.rank}">Genin</span>
+                        </span>
+                    </div>
+                    <span th:if="${#lists.isEmpty(missao.ninjas)}" class="empty-ninjas">
+                        Nenhum ninja
+                    </span>
+                </td>
+                <td>
+                    <div class="actions">
+                        <!-- Link Ver apontando para /detalhes/{id} -->
+                        <a class="btn btn-view" th:href="@{/missoes/ui/detalhes/{id}(id=${missao.id})}">
+                            👁 Ver
+                        </a>
+
+                        <!-- Link Alterar apontando para /alterar/{id} -->
+                        <a class="btn btn-edit" th:href="@{/missoes/ui/alterar/{id}(id=${missao.id})}">
+                            ✏️ Alterar
+                        </a>
+
+                        <!-- Deletar via POST -->
+                        <form class="delete-form" th:action="@{/missoes/ui/deletar/{id}(id=${missao.id})}"
+                              method="post">
+                            <button class="btn btn-delete" type="submit">🗑 Deletar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${#lists.isEmpty(missoes)}" class="empty-state">
+        <p>Nenhuma missão cadastrada ainda.</p>
+    </div>
+</div>
+
 </body>
 </html>
