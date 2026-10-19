@@ -51,15 +51,15 @@ As duas entidades têm as mesmas cinco rotas, com os mesmos nomes: `POST /criar`
 | GET | `/ninjas/listar/{id}` | Busca um ninja pelo id |
 | PUT | `/ninjas/alterar/{id}` | Altera um ninja |
 | DELETE | `/ninjas/deletar/{id}` | Remove um ninja |
-| POST | `/missoes/criar` | Cadastra uma missão (o corpo precisa do campo `id`, com `0`) |
+| POST | `/missoes/criar` | Cadastra uma missão |
 | GET | `/missoes/listar` | Lista todas as missões |
 | GET | `/missoes/listar/{id}` | Busca uma missão pelo id |
 | PUT | `/missoes/alterar/{id}` | Altera uma missão |
 | DELETE | `/missoes/deletar/{id}` | Remove uma missão |
 
 Os `POST` respondem `201` com uma mensagem dizendo o id criado e os `GET` por id respondem `404`
-quando o id não existe. Nos `DELETE`, só o de ninja responde `404`: o de missão responde `200`
-com a mensagem de sucesso mesmo para um id que nunca existiu.
+quando o id não existe. Os dois `DELETE` respondem `404` para um id inexistente, e o de missão
+responde `409` quando ainda há ninjas apontando para ela.
 
 ## Telas
 
@@ -84,9 +84,10 @@ Os controllers de view são `@Controller`, e não `@RestController`: o retorno �
 template, que o Spring resolve dentro de `templates/`. Com `@RestController` o texto virava o
 corpo da resposta, e a página não renderizava.
 
-O `<title>` do formulário de ninja se apoia em `ninja.id != null` para escolher entre
-`Adicionar` e `Alterar`. O de missão usa `missao.id > 0`, que funciona porque um `MissoesDTO`
-novo nasce com `id` igual a zero (o campo é `long`, não `Long`).
+Os dois formulários decidem entre cadastro e alteração olhando o id do objeto: `ninja.id != null`
+em ninja e `missao.id != null` em missão. Os dois ids são `Long`, então um objeto novo traz `null`
+e a comparação com `null` é segura. Com id primitivo (`long`) a novidade valeria `0`, e a
+comparação teria que ser com zero.
 
 As fotos ficam em `src/main/resources/static/img/`, servidas pelo próprio app, e a coluna
 `img_url` guarda o caminho delas (`/img/naruto.png`). São nove retratos tirados do infobox de
@@ -113,25 +114,17 @@ e `MissoesControllerUI` são a camada de view.
 
 ## O que falta
 
-Teste: fora o `contextLoads` que o Spring Initializr gera, não há nenhum.
-
-`POST /missoes/criar` só aceita corpo com o campo `id` dentro, e com o valor `0`. Sem o campo a
-resposta é `400` ("Cannot map `null` into type `long`") e com um id diferente de zero é `500`.
-A causa do `400` é o `id` do `MissoesDTO` ser `long` primitivo, que o Jackson recusa preencher
-com nulo; no `NinjaDTO` o campo é `Long`, e por isso `POST /ninjas/criar` aceita um corpo só com
-nome, email, idade e rank. Trocar o tipo em `MissoesDTO` resolve.
-
-`DELETE /missoes/deletar/{id}` responde `200` e a mensagem de sucesso mesmo quando o id não
-existe, porque o controller compara o `ResponseEntity` que ele mesmo devolveu em vez do DTO
-encontrado, e esse objeto nunca é nulo.
-
-`DELETE /missoes/deletar/{id}` com ninjas vinculados devolve `500`: a chave estrangeira em
-`tb_cadastro` segura a remoção e a resposta é o erro de integridade cru. A tela de missões checa
-antes de chamar e mostra um aviso no lugar.
+Teste: fora o `contextLoads` que o Spring Initializr gera, não há nenhum. As rotas foram testadas
+à mão, pelo `curl`.
 
 Os dois `PUT` da API gravam a entidade inteira, então mandar um campo só zera os outros. A tela
 de alteração de ninja contorna isso repondo a missão atual antes de salvar, mas a rota continua
 sem aceitar alteração parcial.
+
+Mandar um `id` no corpo do `POST /criar` cai no caminho de atualização do `save` e a resposta é
+`500`, nas duas entidades. Id em criação não faz sentido, e o comportamento está igual dos dois
+lados; vale fixar `id` em `null` nos dois `Service` antes de salvar, quando entrar o teste da
+criação.
 
 ## Decisões
 
@@ -151,3 +144,9 @@ navegador; baixar os arquivos uma vez deixou a tela independente disso.
 
 As anotações do Swagger ficam no controller, junto da rota que descrevem. Um arquivo OpenAPI
 separado descreveria as mesmas rotas duas vezes e sairia de sincronia no primeiro método novo.
+
+O `DELETE` de missão checa os ninjas vinculados antes de chamar o serviço. Sem essa checagem a
+resposta era `500`, porque a chave estrangeira em `tb_cadastro` recusa a remoção e o erro de
+integridade aparecia cru. Com a checagem sai `409`, que é o código para conflito com o estado
+atual do recurso. A tela de missões faz a mesma checagem para mostrar um aviso em vez da página
+de erro.
