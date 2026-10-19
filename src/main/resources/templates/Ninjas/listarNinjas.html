@@ -104,6 +104,35 @@
             filter: brightness(1.1);
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        /* Botão de navegação para a outra listagem */
+        .btn-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            transition: transform var(--transition), background var(--transition), border-color var(--transition);
+        }
+
+        .btn-nav:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.22);
+            border-color: rgba(255, 255, 255, 0.45);
+        }
+
         /* ===============================
            WRAPPER DA TABELA
            =============================== */
@@ -296,7 +325,12 @@
                 flex-direction: column;
                 text-align: center;
             }
-            .btn-add {
+            .header-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+            .btn-add,
+            .btn-nav {
                 width: 100%;
                 justify-content: center;
             }
@@ -319,9 +353,14 @@
             <h1>🥷 Lista de Ninjas</h1>
             <p class="subtitle">Gerencie os ninjas cadastrados na vila</p>
         </div>
-        <a class="btn-add" th:href="@{/ninjas/ui/adicionar}">
-            ➕ Adicionar Ninja
-        </a>
+        <div class="header-actions">
+            <a class="btn-nav" th:href="@{/missoes/ui/listar}">
+                📜 Missões
+            </a>
+            <a class="btn-add" th:href="@{/ninjas/ui/adicionar}">
+                ➕ Adicionar Ninja
+            </a>
+        </div>
     </header>
 
     <div class="table-wrapper">
