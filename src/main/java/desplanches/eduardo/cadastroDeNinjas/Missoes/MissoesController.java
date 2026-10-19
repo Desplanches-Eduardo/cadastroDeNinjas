@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import desplanches.eduardo.cadastroDeNinjas.Ninjas.NinjaModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -87,17 +88,25 @@ public class MissoesController {
     @Operation(summary = "Deleta a missão por id", description = "Essa rota deleta uma missão pelo seu id")
     @ApiResponses(value ={
             @ApiResponse(responseCode = "200", description = "Missão deletada com sucesso" ),
-            @ApiResponse(responseCode = "404", description = "Missão não encontrado." ),
+            @ApiResponse(responseCode = "404", description = "Missão não encontrada." ),
+            @ApiResponse(responseCode = "409", description = "Missão com ninjas vinculados" ),
     })
     public ResponseEntity<String> deletarMissao(
             @Parameter(description = "Usuário manda id no caminho da requisição")
             @PathVariable Long id){
-        if (listarMissoesPorId(id)!= null){
-            missoesService.deletarMissao(id);
-            return ResponseEntity.ok("A missçao com ID " + id + " foi deletada com sucesso");
-        }else {
+        MissoesDTO missao = missoesService.listarMissoesPorId(id);
+        if (missao == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Missão não encontrada. Missão com o ID:" + id +" não existe em nossos registros");
+                    .body("Missão não encontrada. Missão com o ID: " + id + " não existe em nossos registros");
         }
+        // A chave estrangeira em tb_cadastro.missoes_id segura a remoção: sem essa checagem
+        // o banco devolve erro de integridade e a resposta sai 500.
+        List<NinjaModel> ninjas = missao.getNinjas();
+        if (ninjas != null && !ninjas.isEmpty()){
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Missão não deletada: " + ninjas.size() + " ninja(s) ainda estão vinculados a ela");
+        }
+        missoesService.deletarMissao(id);
+        return ResponseEntity.ok("A missão com ID " + id + " foi deletada com sucesso");
     }
 }
