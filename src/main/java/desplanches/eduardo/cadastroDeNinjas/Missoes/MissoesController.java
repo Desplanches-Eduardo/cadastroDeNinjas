@@ -1,5 +1,9 @@
 package desplanches.eduardo.cadastroDeNinjas.Missoes;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +22,11 @@ public class MissoesController {
     }
 
     @PostMapping("/criar")
+    @Operation(summary = "Cria uma nova missão", description = "Essa rota cria uma nova missão e insere no banco de dados")
+    @ApiResponses(value ={
+            @ApiResponse(responseCode = "201", description = "Ninja criado com sucesso" ),
+            @ApiResponse(responseCode = "400", description = "Erro na criação do ninja" ),
+    })
     public ResponseEntity<String> criarMissao(@RequestBody MissoesDTO missao){
         MissoesDTO missaoCriada = missoesService.criarMissao(missao);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -25,13 +34,26 @@ public class MissoesController {
     }
 
     @GetMapping("/listar")
+    @Operation(summary = "Lista todas as missões", description = "Essa rota lista todas as missões do banco de dados")
+    @ApiResponses(value ={
+            @ApiResponse(responseCode = "200", description = "Lista todas as missões em JSON" ),
+            @ApiResponse(responseCode = "400", description = "Erro na criação do ninja" ),
+    })
     public ResponseEntity<List<MissoesDTO>> listarMissoes(){
         List<MissoesDTO> missoes = missoesService.listarMissoes();
         return ResponseEntity.ok(missoes);
     }
 
+
     @GetMapping("/listar/{id}")
-    public ResponseEntity<?> listarMissoesPorId(@PathVariable Long id){
+    @Operation(summary = "Lista a missão por id", description = "Essa rota lista uma missão pelo seu id")
+    @ApiResponses(value ={
+            @ApiResponse(responseCode = "200", description = "Missão encontrada com sucesso" ),
+            @ApiResponse(responseCode = "404", description = "Missão não encontrado." ),
+    })
+    public ResponseEntity<?> listarMissoesPorId(
+            @Parameter(description = "Usuário manda id no caminho da requisição")
+            @PathVariable Long id){
         MissoesDTO missoes =  missoesService.listarMissoesPorId(id);
         if(missoes != null){
             return ResponseEntity.ok(missoes);
@@ -42,7 +64,16 @@ public class MissoesController {
     }
 
     @PutMapping("/alterar/{id}")
-    public ResponseEntity<?> alterarMissoes(@PathVariable Long id, @RequestBody MissoesDTO missaoAlterada){
+    @Operation(summary = "Altera a missão por id", description = "Essa rota altera uma missão pelo seu id")
+    @ApiResponses(value ={
+            @ApiResponse(responseCode = "200", description = "Missão alterada com sucesso" ),
+            @ApiResponse(responseCode = "404", description = "Missão não encontrado." ),
+    })
+    public ResponseEntity<?> alterarMissoes(
+            @Parameter(description = "Usuário manda id no caminho da requisição")
+            @PathVariable Long id,
+            @Parameter(description = "Usuário manda os dados do ninja a ser atualizado no corpo da requisição")
+            @RequestBody MissoesDTO missaoAlterada){
         MissoesDTO missao = missoesService.alterarMissoes(id, missaoAlterada);
         if (missao != null){
             return ResponseEntity.ok(missao);
@@ -53,7 +84,14 @@ public class MissoesController {
     }
 
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<String> deletarMissao(@PathVariable Long id){
+    @Operation(summary = "Deleta a missão por id", description = "Essa rota deleta uma missão pelo seu id")
+    @ApiResponses(value ={
+            @ApiResponse(responseCode = "200", description = "Missão deletada com sucesso" ),
+            @ApiResponse(responseCode = "404", description = "Missão não encontrado." ),
+    })
+    public ResponseEntity<String> deletarMissao(
+            @Parameter(description = "Usuário manda id no caminho da requisição")
+            @PathVariable Long id){
         if (listarMissoesPorId(id)!= null){
             missoesService.deletarMissao(id);
             return ResponseEntity.ok("A missçao com ID " + id + " foi deletada com sucesso");
