@@ -1,5 +1,7 @@
 # cadastroDeNinjas
 
+![Java 17](https://img.shields.io/badge/Java-17-6366f1?style=flat-square&labelColor=1e293b&logo=openjdk&logoColor=white) ![Spring Boot 4.1.1](https://img.shields.io/badge/Spring_Boot-4.1.1-6366f1?style=flat-square&labelColor=1e293b&logo=springboot&logoColor=white) ![Thymeleaf](https://img.shields.io/badge/Thymeleaf-6366f1?style=flat-square&labelColor=1e293b&logo=thymeleaf&logoColor=white) ![Flyway](https://img.shields.io/badge/Flyway-6366f1?style=flat-square&labelColor=1e293b&logo=flyway&logoColor=white) ![H2](https://img.shields.io/badge/H2-6366f1?style=flat-square&labelColor=1e293b&logo=h2database&logoColor=white) ![Swagger UI](https://img.shields.io/badge/Swagger_UI-6366f1?style=flat-square&labelColor=1e293b&logo=swagger&logoColor=white)
+
 Projeto de estudo de API REST com Spring Boot, para praticar modelagem de banco, migração
 versionada, separação em camadas e documentação das rotas. As duas entidades, os repositórios,
 os endpoints de CRUD de ninjas e de missões, as telas em Thymeleaf e a documentação no Swagger
